@@ -108,7 +108,7 @@ describe("Instanciation d'un ReversiModel", () => {
             B.forEach(
                 (l, i) => expect(l.length).withContext(`La ligne ${i} devrait contenir 8 colonne`).toEqual(8)
             );
-            const BOK: Board_RO = placeToken( initEmpty(), [[3,4], [4,3]], [[3,3], [4,4]]);
+            const BOK: Board_RO = placeToken( initEmpty(), [[3,4], [4,3]], [[3,3], [4,4]] );
             const L = differencesBoards(BOK, B);
             L.forEach( ([i, j]) => {
                 expect(false).withContext(`[${i},${j}] devrait valoir ${BOK[i][j]} au lieu de ${B[i]?.[j]}`).toEqual( true );
@@ -163,11 +163,11 @@ describe("Vérifier que ReversiModel implémente bien les règles", () => {
         M.setState('Player1', placeToken( initEmpty(), [[3,4], [4,3]], [[3,3], [4,4]]) );
         M.gameStateObs.subscribe( v => {
             const L = M.whereCanPlay();
-            expect(L.length).withContext(`Il devrait y avoir 4 coups possibles et pas seulement ${L.length}`).toEqual(4);
-            expect(L.find( c => c[0] === 2 && c[1] === 3)).withContext("[2,4] devrait faire parti de la liste des coups possibles").toBeDefined();
-            expect(L.find( c => c[0] === 3 && c[1] === 2)).withContext("[3,5] devrait faire parti de la liste des coups possibles").toBeDefined();
-            expect(L.find( c => c[0] === 4 && c[1] === 5)).withContext("[4,2] devrait faire parti de la liste des coups possibles").toBeDefined();
-            expect(L.find( c => c[0] === 5 && c[1] === 4)).withContext("[5,3] devrait faire parti de la liste des coups possibles").toBeDefined();
+            expect(L.length).withContext(`Il devrait y avoir 4 coups possibles et pas ${L.length} ${JSON.stringify(L)}`).toEqual(4);
+            expect(L.find( c => c[0] === 2 && c[1] === 3)).withContext("[2,3] devrait faire parti de la liste des coups possibles").toBeDefined();
+            expect(L.find( c => c[0] === 3 && c[1] === 2)).withContext("[3,2] devrait faire parti de la liste des coups possibles").toBeDefined();
+            expect(L.find( c => c[0] === 4 && c[1] === 5)).withContext("[4,5] devrait faire parti de la liste des coups possibles").toBeDefined();
+            expect(L.find( c => c[0] === 5 && c[1] === 4)).withContext("[5,4] devrait faire parti de la liste des coups possibles").toBeDefined();
             done();
         });
     });
@@ -289,6 +289,10 @@ describe("Vérifier que ReversiModel implémente bien les règles", () => {
         ].map<Board>( RM_test.stringToBoard );
         const M = new RM_test();
         M.setState('Player2', P1[0]);
+
+        let nbUpdate = 0;
+        M.gameStateObs.subscribe( () => nbUpdate++ );
+
         console.log( `---------- P1, step 0:\n${M.toString()}`);
         M.play(4,6);
         console.log( `---------- P1, step 1, after O plays at [4,6]:\n${M.toString()}`);
@@ -299,6 +303,8 @@ describe("Vérifier que ReversiModel implémente bien les règles", () => {
         expect(differencesBoards(M.getBoard(), P1[2]).length).withContext(`step 2 : Board should be in another state`).toEqual(0);
         expect(M.getTurn()).withContext("After X playing at [4,1], it is still X turn cause O cannot play").toEqual('Player1');
         expect(M.whereCanPlay().length).withContext("End of game, X should not be able to play").toEqual(0);
+
+        expect(nbUpdate).withContext(`Le modèle aurait dû nous notifier 3 fois (1 pour l'initialisation + 2 coups joués). Or nous avons été notifié ${nbUpdate} fois.`).toEqual(3);
         done();
     });
 });
