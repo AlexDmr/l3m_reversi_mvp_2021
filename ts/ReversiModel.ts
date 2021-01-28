@@ -64,10 +64,10 @@ export class ReversiModel implements ReversiModelInterface {
             if (!this.canPlay()) {
                 this.currentTurn = (this.currentTurn === 'Player1' ? 'Player2' : 'Player1');
             }
-            /*this.gameStateSubj.next({
+            this.gameStateSubj.next({
                 turn: this.currentTurn,
                 board: this.board
-            });*/
+            });
         }
     }
 
