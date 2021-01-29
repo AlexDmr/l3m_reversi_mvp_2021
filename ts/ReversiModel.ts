@@ -72,6 +72,10 @@ export class ReversiModel implements ReversiModelInterface {
     }
 
     private canPlay(): boolean {
+        return !!this.board.find(
+            (L, i) => L.find( (_, j) => this.PionsTakenIfPlayAt(i, j).length > 0 )
+        );
+
         for(let i=0; i<8; i++) {
             for(let j=0; j<8; j++) {
                 if (this.PionsTakenIfPlayAt(i, j).length > 0) {
