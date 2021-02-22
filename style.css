@@ -16,13 +16,13 @@ table.reversi	td.canPlayHere {
     background-color: yellow;
 }
 
-td.Player1 > div, td.Player2 > div {
+.Player1 > div, .Player2 > div {
     width: 30px;
     height: 30px;
     border: solid black 1px;
     border-radius: 50%;
 }
 
-td.Player1 > div {
+.Player1 > div {
     background: black;
 }

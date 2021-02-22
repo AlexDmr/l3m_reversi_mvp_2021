@@ -1,12 +1,11 @@
 import {ReversiModel} from "./ReversiModel";
-import {ReversiPresenter} from "./ReversiPresenter";
-import {C, Board, Board_RO, R} from "./ReversiDefinitions";
+import {C, Board_RO, R} from "./ReversiDefinitions";
+import { GamePresenter } from "./Game.presenter";
 
 
 // ____________________________ Init ____________________________
+const game = new GamePresenter( document.body.querySelector("div.game") as HTMLDivElement);
 const m = new ReversiModel();
-const p1 = new ReversiPresenter(document.querySelector("div.R1") as HTMLElement, m);
-const p2 = new ReversiPresenter(document.querySelector("div.R2") as HTMLElement, m);
 
 // ____________________________ Debugger ________________________
 function cToString(c: C): string {

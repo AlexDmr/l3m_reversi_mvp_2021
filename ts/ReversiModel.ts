@@ -1,32 +1,37 @@
 import { BehaviorSubject, fromEvent, Observable } from 'rxjs';
 // import { map } from 'rxjs/operators';
-import {Board, Turn, ReversiModelInterface, C, TileCoords, Board_RO, GameState, PlayImpact} from "./ReversiDefinitions";
+import {Board, Turn, ReversiModelInterface, C, TileCoords, Board_RO, GameState, PlayImpact, emptyBoard} from "./ReversiDefinitions";
 
 export class ReversiModel implements ReversiModelInterface {
     protected board: Board;
     protected currentTurn: Turn;
     protected gameStateSubj: BehaviorSubject<GameState>;
+    protected winnerSubj = new BehaviorSubject<undefined | Turn>(undefined);
     
     public readonly gameStateObs: Observable<GameState>;
+    public readonly winnerObs = this.winnerSubj.asObservable();
 
     constructor() {
-        this.initBoard();
         this.gameStateSubj = new BehaviorSubject<GameState>({
-            board: this.board,
-            turn: this.currentTurn
+            board: emptyBoard(),
+            turn: 'Player1'
         });
         this.gameStateObs = this.gameStateSubj.asObservable();
+        this.initBoard();
     }
     
     
     initBoard(): void {
-        this.board = new Array(8).fill(0).map(
-                        () => new Array<C>(8).fill('Empty')
-                     ) as Board;
+        this.board = emptyBoard();
         this.board[3][3] = this.board[4][4] = "Player2";
         this.board[3][4] = this.board[4][3] = "Player1";
 
         this.currentTurn = 'Player1';
+
+        this.gameStateSubj.next({
+            board: this.board,
+            turn: this.currentTurn
+        });
     }
 
 
@@ -63,6 +68,9 @@ export class ReversiModel implements ReversiModelInterface {
             this.currentTurn = (this.currentTurn === 'Player1' ? 'Player2' : 'Player1');
             if (!this.canPlay()) {
                 this.currentTurn = (this.currentTurn === 'Player1' ? 'Player2' : 'Player1');
+                if (!this.canPlay()) {
+                    this.winnerSubj.next(this.currentTurn);
+                }
             }
             this.gameStateSubj.next({
                 turn: this.currentTurn,
@@ -75,15 +83,6 @@ export class ReversiModel implements ReversiModelInterface {
         return !!this.board.find(
             (L, i) => L.find( (_, j) => this.PionsTakenIfPlayAt(i, j).length > 0 )
         );
-
-        for(let i=0; i<8; i++) {
-            for(let j=0; j<8; j++) {
-                if (this.PionsTakenIfPlayAt(i, j).length > 0) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 }
 

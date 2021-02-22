@@ -23,3 +23,9 @@ export interface ReversiModelInterface {                  // Le modèle du jeu R
 
     gameStateObs: Observable<GameState>;                  // Un observable de l'état courant du jeu
 }
+
+export function emptyBoard(): Board {
+    return new Array(8).fill(0).map(
+        () => new Array<C>(8).fill('Empty')
+     ) as Board;
+}
